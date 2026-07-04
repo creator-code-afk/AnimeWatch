@@ -1,0 +1,10 @@
+<resources>
+    <!-- Базовая тема-заглушка для манифеста. Реальная тёмно-фиолетовая тема
+         задаётся в Compose (см. ui/theme/Theme.kt), эта тема используется
+         только до отрисовки первого Compose-кадра (splash/launch background). -->
+    <style name="Theme.AnimeWatch" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#0D0B14</item>
+        <item name="android:windowBackground">#0D0B14</item>
+        <item name="android:navigationBarColor">#0D0B14</item>
+    </style>
+</resources>
