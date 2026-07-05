@@ -4,13 +4,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -91,7 +92,7 @@ fun AnimeNavGraph(repository: AnimeRepository) {
                     NavigationBarItem(
                         selected = currentRoute == Routes.STATS,
                         onClick = { navController.navigateSingleTop(Routes.STATS) },
-                        icon = { Icon(Icons.Default.BarChart, contentDescription = "Статистика") },
+                        icon = { Icon(Icons.Default.List, contentDescription = "Статистика") },
                         label = { Text("Статистика") },
                         colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
                             selectedIconColor = AccentPurple,
