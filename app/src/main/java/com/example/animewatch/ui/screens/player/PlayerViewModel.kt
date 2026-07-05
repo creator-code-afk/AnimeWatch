@@ -13,7 +13,7 @@ data class PlayerUiState(
     val isLoading: Boolean = true,
     val anime: Anime? = null,
     val currentEpisodeNumber: Int = 1,
-    val selectedQuality: String = "HD", // выбранная "озвучка/качество" — SD/HD/FHD
+    val selectedQuality: String = "720p", // выбранная "озвучка/качество" — 480p/720p/1080p
     val errorMessage: String? = null
 )
 
