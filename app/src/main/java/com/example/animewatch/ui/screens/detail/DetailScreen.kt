@@ -1,6 +1,7 @@
 package com.example.animewatch.ui.screens.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -202,7 +203,7 @@ private fun EpisodeRow(
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(SurfaceDark)
-            .androidxClickable(onClick)
+            .clickable { onClick() }
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -217,6 +218,3 @@ private fun EpisodeRow(
         )
     }
 }
-
-private fun Modifier.androidxClickable(onClick: () -> Unit): Modifier =
-    this.then(androidx.compose.foundation.clickable { onClick() })
