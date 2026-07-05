@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.example.animewatch"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.animewatch"
         minSdk = 24        // Android 7.0
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
     }
@@ -74,10 +74,13 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
 
     // --- ExoPlayer (Media3) ---
-    implementation("androidx.media3:media3-exoplayer:1.10.0")
-    implementation("androidx.media3:media3-exoplayer-hls:1.10.0")
-    implementation("androidx.media3:media3-ui:1.10.0")
-    implementation("androidx.media3:media3-common:1.10.0")
+    implementation("androidx.media3:media3-exoplayer:1.4.1")
+    implementation("androidx.media3:media3-exoplayer-hls:1.4.1")
+    implementation("androidx.media3:media3-ui:1.4.1")
+    implementation("androidx.media3:media3-common:1.4.1")
+    
+    
+    
 
     // --- Coil (изображения) ---
     implementation("io.coil-kt.coil3:coil-compose:3.0.0")
