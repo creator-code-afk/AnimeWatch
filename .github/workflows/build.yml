@@ -20,10 +20,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Установка Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Установка нужных пакетов Android SDK
-        run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+        run: sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
       - name: Установка Gradle 8.7
         uses: gradle/actions/setup-gradle@v4
