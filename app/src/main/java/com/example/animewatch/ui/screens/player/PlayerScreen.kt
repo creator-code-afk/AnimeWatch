@@ -173,7 +173,7 @@ fun PlayerScreen(
                 DropdownMenu(expanded = qualityMenuExpanded, onDismissRequest = { qualityMenuExpanded = false }) {
                     val availableQualities = uiState.anime?.episodes
                         ?.find { it.episodeNumber == uiState.currentEpisodeNumber }
-                        ?.qualityLinks?.keys ?: setOf("SD", "HD", "FHD")
+                        ?.qualityLinks?.keys ?: setOf("480p", "720p", "1080p")
                     availableQualities.forEach { quality ->
                         DropdownMenuItem(
                             text = { Text(quality) },
