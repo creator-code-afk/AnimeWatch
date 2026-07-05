@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 /**
- * Реализация репозитория: объединяет сетевые вызовы AniLibria (Retrofit)
+ * Реализация репозитория: объединяет сетевые вызовы AniLiberty (Retrofit)
  * и локальное хранилище (Room). ViewModel-и работают только с этим классом
  * через интерфейс AnimeRepository, не зная про источник данных.
  */
@@ -35,19 +35,19 @@ class AnimeRepositoryImpl(
     // ---------- Сеть ----------
 
     override suspend fun getUpdates(): Result<List<Anime>> = withContext(Dispatchers.IO) {
-        runCatching { api.getUpdates().toDomainList() }
+        runCatching { api.getLatest().toDomainList() }
     }
 
     override suspend fun getPopular(): Result<List<Anime>> = withContext(Dispatchers.IO) {
-        runCatching { api.getRandomTitles().toDomainList() }
+        runCatching { api.getRandom().toDomainList() }
     }
 
     override suspend fun searchAnime(query: String): Result<List<Anime>> = withContext(Dispatchers.IO) {
-        runCatching { api.searchTitles(query).toDomainList() }
+        runCatching { api.searchReleases(query).toDomainList() }
     }
 
     override suspend fun getAnimeById(id: Int): Result<Anime> = withContext(Dispatchers.IO) {
-        runCatching { api.getTitleById(id).toDomain() }
+        runCatching { api.getReleaseById(id).toDomain() }
     }
 
     // ---------- Избранное ----------
