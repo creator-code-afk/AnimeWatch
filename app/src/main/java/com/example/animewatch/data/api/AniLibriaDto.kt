@@ -1,84 +1,60 @@
 package com.example.animewatch.data.api
 
-import com.google.gson.annotations.SerializedName
-
 /**
- * DTO-модели ответа AniLibria API v3 (https://api.anilibria.tv/v3/...).
- * Названия полей соответствуют официальному JSON-формату API.
+ * DTO-модели ответа нового API AniLiberty v1 (https://anilibria.top/api/v1/...).
+ * Старый api.anilibria.tv/v3 закрыт разработчиками, поэтому используется новый домен.
  */
 
-data class TitleListResponse(
-    val list: List<TitleDto> = emptyList()
-)
-
-data class TitleDto(
+data class ReleaseDto(
     val id: Int,
-    val names: NamesDto,
+    val type: ValueDescriptionDto?,
+    val year: Int?,
+    val name: ReleaseNameDto,
+    val alias: String,
+    val season: ValueDescriptionDto?,
+    val poster: PosterDto?,
     val description: String?,
-    val posters: PostersDto,
-    val status: StatusDto?,
-    val type: TypeDto?,
-    val genres: List<String>? = null,
-    val team: TeamDto?,
-    val season: SeasonDto?,
-    val player: PlayerDto?
+    val episodes: List<EpisodeDto>? = null
 )
 
-data class NamesDto(
-    val ru: String,
-    val en: String?
+data class ReleaseNameDto(
+    val main: String,
+    val english: String?,
+    val alternative: String?
 )
 
-data class PostersDto(
-    val original: PosterUrlDto?,
-    val medium: PosterUrlDto?,
-    val small: PosterUrlDto?
+data class ValueDescriptionDto(
+    val value: String?,
+    val description: String?
 )
 
-data class PosterUrlDto(
-    val url: String?
-)
-
-data class StatusDto(
-    val string: String?,
-    val code: Int?
-)
-
-data class TypeDto(
-    @SerializedName("full_string") val fullString: String?,
-    val episodes: Int?,
-    val length: Int?
-)
-
-data class TeamDto(
-    val voice: List<String>? = null,
-    val translator: List<String>? = null
-)
-
-data class SeasonDto(
-    val year: Int?
-)
-
-data class PlayerDto(
-    val host: String?,
-    val episodes: EpisodesRangeDto?,
-    val list: Map<String, PlayerEpisodeDto>? = null
-)
-
-data class EpisodesRangeDto(
-    val first: Int?,
-    val last: Int?
-)
-
-data class PlayerEpisodeDto(
-    val episode: Int?,
-    val name: String?,
+data class PosterDto(
     val preview: String?,
-    val hls: HlsDto?
+    val thumbnail: String?,
+    val optimized: PosterOptimizedDto?
 )
 
-data class HlsDto(
-    val fhd: String?,
-    val hd: String?,
-    val sd: String?
+data class PosterOptimizedDto(
+    val preview: String?,
+    val thumbnail: String?
 )
+
+data class EpisodeDto(
+    val id: String,             // UUID серии
+    val name: String?,
+    val name_english: String?,
+    val ordinal: Double?,       // номер серии, может быть дробным
+    val preview: PosterDto?,
+    val hls_480: String?,
+    val hls_720: String?,
+    val hls_1080: String?,
+    val duration: Int?,
+    val release_id: Int?
+)
+
+/**
+ * Ответ поиска (/app/search/releases) — по документации структура похожа на
+ * список релизов. Если формат окажется другим (например, обёрнутым в "data"),
+ * поправить парсинг здесь.
+ */
+typealias ReleaseListDto = List<ReleaseDto>
