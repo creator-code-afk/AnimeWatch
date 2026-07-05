@@ -39,4 +39,7 @@ interface AnimeRepository {
     // --- Экспорт / импорт базы данных ---
     suspend fun exportDatabase(destinationPath: String): Result<Unit>
     suspend fun importDatabase(sourcePath: String): Result<Unit>
+
+    // --- Сброс данных (для экрана "Настройки") ---
+    suspend fun clearAllData()
 }

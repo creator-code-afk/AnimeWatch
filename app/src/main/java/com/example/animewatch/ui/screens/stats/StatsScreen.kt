@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.animewatch.domain.models.WatchStatus
-import com.example.animewatch.ui.theme.AccentPurple
 import com.example.animewatch.ui.theme.BackgroundDark
 import com.example.animewatch.ui.theme.SurfaceDark
 import java.io.File
@@ -97,7 +96,7 @@ fun StatsScreen(viewModel: StatsViewModel) {
                                 // В реальном приложении здесь стоит показать Snackbar/Toast с результатом
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.weight(1f)
                     ) {

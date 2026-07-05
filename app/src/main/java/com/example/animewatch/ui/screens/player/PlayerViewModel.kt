@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.animewatch.domain.models.Anime
 import com.example.animewatch.domain.repository.AnimeRepository
+import com.example.animewatch.util.AppSettings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +24,8 @@ data class PlayerUiState(
  */
 class PlayerViewModel(private val repository: AnimeRepository) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(PlayerUiState())
+    // Изначальное качество берём из настроек пользователя (экран "Настройки")
+    private val _uiState = MutableStateFlow(PlayerUiState(selectedQuality = AppSettings.defaultQuality.value))
     val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
 
     fun load(animeId: Int, episodeNumber: Int) {

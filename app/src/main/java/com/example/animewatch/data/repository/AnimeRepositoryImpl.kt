@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 /**
- * Реализация репозитория: объединяет сетевые вызовы AniLiberty (Retrofit)
+ * Реализация репозитория: объединяет сетевые вызовы AniLibria (Retrofit)
  * и локальное хранилище (Room). ViewModel-и работают только с этим классом
  * через интерфейс AnimeRepository, не зная про источник данных.
  */
@@ -138,6 +138,13 @@ class AnimeRepositoryImpl(
 
     override suspend fun importDatabase(sourcePath: String): Result<Unit> = withContext(Dispatchers.IO) {
         DatabaseExportImport.import(appContext, sourcePath)
+    }
+
+    // ---------- Сброс данных ----------
+
+    override suspend fun clearAllData() = withContext(Dispatchers.IO) {
+        favoriteDao.deleteAll()
+        historyDao.deleteAll()
     }
 }
 

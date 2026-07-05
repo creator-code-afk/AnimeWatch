@@ -1,9 +1,11 @@
 package com.example.animewatch.ui.screens.player
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,17 +34,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import com.example.animewatch.ui.theme.AccentPurple
 import kotlinx.coroutines.delay
 
 /**
  * Экран плеера — ExoPlayer на весь экран с элементами управления:
- * пауза/воспроизведение (встроено в PlayerView), выбор серии, выбор озвучки/качества.
+ * пауза/перемотка встроены в PlayerView, плюс выбор серии и качества.
+ * Экран автоматически разворачивается в горизонтальную ориентацию и скрывает
+ * системные панели (статус-бар/навигацию) для полноэкранного просмотра, как
+ * это делают большинство видео-приложений.
  */
 @Composable
 fun PlayerScreen(
@@ -52,11 +60,34 @@ fun PlayerScreen(
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
+    val activity = context as? Activity
     val lifecycleOwner = LocalLifecycleOwner.current
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(animeId, episodeNumber) {
         viewModel.load(animeId, episodeNumber)
+    }
+
+    // Разворачиваем экран в горизонтальную ориентацию и скрываем системные панели
+    // на всё время просмотра, возвращаем как было при выходе с экрана.
+    DisposableEffect(Unit) {
+        val originalOrientation = activity?.requestedOrientation
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        activity?.window?.let { window ->
+            val controller = WindowCompat.getInsetsController(window, window.decorView)
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+
+        onDispose {
+            activity?.requestedOrientation = originalOrientation ?: ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            activity?.window?.let { window ->
+                WindowCompat.getInsetsController(window, window.decorView).show(WindowInsetsCompat.Type.systemBars())
+            }
+        }
     }
 
     val exoPlayer = remember {
@@ -117,7 +148,10 @@ fun PlayerScreen(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
-                    useController = true // встроенные элементы: пауза, перемотка, полноэкранный режим
+                    useController = true // встроенные элементы: пауза, перемотка
+                    // Важно: FIT сохраняет пропорции видео (letterbox), а не растягивает
+                    // и не искажает картинку под размер экрана.
+                    resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
                 }
             }
         )
@@ -125,7 +159,7 @@ fun PlayerScreen(
         if (uiState.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
-                color = AccentPurple
+                color = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -165,10 +199,10 @@ fun PlayerScreen(
                 }
             }
 
-            // Выбор озвучки/качества (SD/HD/FHD)
+            // Выбор озвучки/качества
             Box {
                 IconButton(onClick = { qualityMenuExpanded = true }) {
-                    Text(uiState.selectedQuality, color = AccentPurple)
+                    Text(uiState.selectedQuality, color = MaterialTheme.colorScheme.primary)
                 }
                 DropdownMenu(expanded = qualityMenuExpanded, onDismissRequest = { qualityMenuExpanded = false }) {
                     val availableQualities = uiState.anime?.episodes

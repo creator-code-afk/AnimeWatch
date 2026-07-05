@@ -29,4 +29,7 @@ interface WatchHistoryDao {
 
     @Query("SELECT COALESCE(SUM(totalEpisodesWatched), 0) FROM watch_history")
     suspend fun getTotalEpisodesWatched(): Int
+
+    @Query("DELETE FROM watch_history")
+    suspend fun deleteAll()
 }

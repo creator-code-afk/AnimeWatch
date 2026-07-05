@@ -40,7 +40,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.animewatch.domain.models.Episode
-import com.example.animewatch.ui.theme.AccentPurple
 import com.example.animewatch.ui.theme.BackgroundDark
 import com.example.animewatch.ui.theme.SurfaceDark
 import com.example.animewatch.ui.theme.TextSecondary
@@ -77,7 +76,7 @@ fun DetailScreen(
                         Icon(
                             imageVector = if (uiState.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = "Избранное",
-                            tint = AccentPurple
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
@@ -158,7 +157,7 @@ fun DetailScreen(
                                         val startEpisode = if (lastEpisode > 0) lastEpisode else (anime.episodes.firstOrNull()?.episodeNumber ?: 1)
                                         onEpisodeClick(anime.id, startEpisode)
                                     },
-                                    colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                     shape = RoundedCornerShape(12.dp),
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -214,7 +213,7 @@ private fun EpisodeRow(
         Icon(
             imageVector = Icons.Default.PlayArrow,
             contentDescription = "Смотреть",
-            tint = AccentPurple
+            tint = MaterialTheme.colorScheme.primary
         )
     }
 }

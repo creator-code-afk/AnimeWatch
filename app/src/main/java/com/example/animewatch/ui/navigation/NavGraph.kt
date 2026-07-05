@@ -5,7 +5,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -16,13 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.navigation.NavType
 import com.example.animewatch.domain.repository.AnimeRepository
+import com.example.animewatch.ui.screens.catalog.CatalogScreen
+import com.example.animewatch.ui.screens.catalog.CatalogViewModel
 import com.example.animewatch.ui.screens.detail.DetailScreen
 import com.example.animewatch.ui.screens.detail.DetailViewModel
 import com.example.animewatch.ui.screens.favorites.FavoritesScreen
@@ -33,9 +37,10 @@ import com.example.animewatch.ui.screens.player.PlayerScreen
 import com.example.animewatch.ui.screens.player.PlayerViewModel
 import com.example.animewatch.ui.screens.search.SearchScreen
 import com.example.animewatch.ui.screens.search.SearchViewModel
+import com.example.animewatch.ui.screens.settings.SettingsScreen
+import com.example.animewatch.ui.screens.settings.SettingsViewModel
 import com.example.animewatch.ui.screens.stats.StatsScreen
 import com.example.animewatch.ui.screens.stats.StatsViewModel
-import com.example.animewatch.ui.theme.AccentPurple
 import com.example.animewatch.ui.theme.BackgroundDark
 import com.example.animewatch.ui.theme.SurfaceDark
 import com.example.animewatch.util.ViewModelFactory
@@ -46,6 +51,8 @@ object Routes {
     const val SEARCH = "search"
     const val FAVORITES = "favorites"
     const val STATS = "stats"
+    const val CATALOG = "catalog"
+    const val SETTINGS = "settings"
     const val DETAIL = "detail/{animeId}"
     const val PLAYER = "player/{animeId}/{episodeNumber}"
 
@@ -54,7 +61,7 @@ object Routes {
 }
 
 // Экраны, на которых показывается нижняя навигационная панель
-private val bottomBarRoutes = setOf(Routes.HOME, Routes.FAVORITES, Routes.STATS)
+private val bottomBarRoutes = setOf(Routes.HOME, Routes.CATALOG, Routes.FAVORITES, Routes.STATS)
 
 @Composable
 fun AnimeNavGraph(repository: AnimeRepository) {
@@ -75,7 +82,17 @@ fun AnimeNavGraph(repository: AnimeRepository) {
                         icon = { Icon(Icons.Default.Home, contentDescription = "Главная") },
                         label = { Text("Главная") },
                         colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                            selectedIconColor = AccentPurple,
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            indicatorColor = BackgroundDark
+                        )
+                    )
+                    NavigationBarItem(
+                        selected = currentRoute == Routes.CATALOG,
+                        onClick = { navController.navigateSingleTop(Routes.CATALOG) },
+                        icon = { Icon(Icons.Default.Menu, contentDescription = "Каталог") },
+                        label = { Text("Каталог") },
+                        colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
                             indicatorColor = BackgroundDark
                         )
                     )
@@ -85,7 +102,7 @@ fun AnimeNavGraph(repository: AnimeRepository) {
                         icon = { Icon(Icons.Default.Favorite, contentDescription = "Избранное") },
                         label = { Text("Избранное") },
                         colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                            selectedIconColor = AccentPurple,
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
                             indicatorColor = BackgroundDark
                         )
                     )
@@ -95,7 +112,7 @@ fun AnimeNavGraph(repository: AnimeRepository) {
                         icon = { Icon(Icons.Default.List, contentDescription = "Статистика") },
                         label = { Text("Статистика") },
                         colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                            selectedIconColor = AccentPurple,
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
                             indicatorColor = BackgroundDark
                         )
                     )
@@ -113,7 +130,8 @@ fun AnimeNavGraph(repository: AnimeRepository) {
                 HomeScreen(
                     viewModel = vm,
                     onAnimeClick = { anime -> navController.navigate(Routes.detail(anime.id)) },
-                    onSearchClick = { navController.navigate(Routes.SEARCH) }
+                    onSearchClick = { navController.navigate(Routes.SEARCH) },
+                    onSettingsClick = { navController.navigate(Routes.SETTINGS) }
                 )
             }
             composable(Routes.SEARCH) {
@@ -122,6 +140,13 @@ fun AnimeNavGraph(repository: AnimeRepository) {
                     viewModel = vm,
                     onAnimeClick = { anime -> navController.navigate(Routes.detail(anime.id)) },
                     onBack = { navController.popBackStack() }
+                )
+            }
+            composable(Routes.CATALOG) {
+                val vm: CatalogViewModel = viewModel(factory = factory)
+                CatalogScreen(
+                    viewModel = vm,
+                    onAnimeClick = { anime -> navController.navigate(Routes.detail(anime.id)) }
                 )
             }
             composable(Routes.FAVORITES) {
@@ -134,6 +159,13 @@ fun AnimeNavGraph(repository: AnimeRepository) {
             composable(Routes.STATS) {
                 val vm: StatsViewModel = viewModel(factory = factory)
                 StatsScreen(viewModel = vm)
+            }
+            composable(Routes.SETTINGS) {
+                val vm: SettingsViewModel = viewModel(factory = factory)
+                SettingsScreen(
+                    viewModel = vm,
+                    onBack = { navController.popBackStack() }
+                )
             }
             composable(
                 route = Routes.DETAIL,

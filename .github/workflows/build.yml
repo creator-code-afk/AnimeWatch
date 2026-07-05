@@ -1,5 +1,7 @@
 name: Build APK
 
+# Сборка запускается автоматически при каждом push в main,
+# а также можно запустить вручную кнопкой "Run workflow" на вкладке Actions
 on:
   push:
     branches: [ main, master ]
@@ -18,11 +20,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Установка Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Установка нужных пакетов Android SDK
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
       - name: Установка Gradle 8.7
         uses: gradle/actions/setup-gradle@v4
