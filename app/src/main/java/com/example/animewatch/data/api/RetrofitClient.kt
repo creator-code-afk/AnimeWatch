@@ -7,15 +7,16 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 /**
- * Единая точка создания Retrofit-клиента для AniLibria API.
+ * Единая точка создания Retrofit-клиента для AniLiberty API v1.
  * Базовый URL и таймауты настроены здесь, чтобы не дублировать конфигурацию.
  */
 object RetrofitClient {
 
-    private const val BASE_URL = "https://api.anilibria.tv/v3/"
+    // Новый актуальный домен API (старый api.anilibria.tv/v3 закрыт разработчиками)
+    private const val BASE_URL = "https://anilibria.top/api/v1/"
 
-    // Базовый хост, к которому нужно добавлять относительные ссылки на постеры от AniLibria
-    const val IMAGE_HOST = "https://anilibria.tv"
+    // Хост для картинок (постеры, превью) — относительные пути из API дополняются этим хостом
+    const val IMAGE_HOST = "https://anilibria.top"
 
     val service: AniLibriaService by lazy {
         val logging = HttpLoggingInterceptor().apply {
