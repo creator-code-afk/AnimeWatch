@@ -4,51 +4,55 @@ import com.example.animewatch.domain.models.Anime
 import com.example.animewatch.domain.models.Episode
 
 /**
- * Преобразование сетевых DTO AniLibria в доменные модели приложения.
+ * Преобразование сетевых DTO AniLiberty v1 в доменные модели приложения.
  */
-fun TitleDto.toDomain(): Anime {
-    val posterPath = posters.original?.url ?: posters.medium?.url ?: posters.small?.url ?: ""
-    val posterUrl = if (posterPath.startsWith("http")) posterPath else RetrofitClient.IMAGE_HOST + posterPath
+fun ReleaseDto.toDomain(): Anime {
+    val posterUrl = fixUrl(poster?.original() ?: "")
 
-    val episodesList = player?.list?.values
+    val episodesList = episodes
         ?.mapNotNull { ep ->
-            val num = ep.episode ?: return@mapNotNull null
+            val ordinal = ep.ordinal ?: return@mapNotNull null
             val links = buildMap {
-                ep.hls?.sd?.let { put("SD", fixHlsUrl(it, player.host)) }
-                ep.hls?.hd?.let { put("HD", fixHlsUrl(it, player.host)) }
-                ep.hls?.fhd?.let { put("FHD", fixHlsUrl(it, player.host)) }
+                ep.hls_480?.let { put("480p", fixUrl(it)) }
+                ep.hls_720?.let { put("720p", fixUrl(it)) }
+                ep.hls_1080?.let { put("1080p", fixUrl(it)) }
             }
             Episode(
                 animeId = id,
-                episodeNumber = num,
-                name = ep.name,
-                previewUrl = ep.preview?.let { if (it.startsWith("http")) it else RetrofitClient.IMAGE_HOST + it },
+                episodeId = ep.id,
+                episodeNumber = Math.round(ordinal).toInt(),
+                ordinalRaw = ordinal,
+                name = ep.name ?: ep.name_english,
+                previewUrl = ep.preview?.original()?.let { fixUrl(it) },
                 qualityLinks = links
             )
         }
-        ?.sortedBy { it.episodeNumber }
+        ?.sortedBy { it.ordinalRaw }
         ?: emptyList()
 
     return Anime(
         id = id,
-        titleRu = names.ru,
-        titleEn = names.en,
+        titleRu = name.main,
+        titleEn = name.english,
         description = description.orEmpty(),
         posterUrl = posterUrl,
-        statusText = status?.string ?: "Неизвестно",
-        typeText = type?.fullString ?: "",
-        genres = genres.orEmpty(),
-        voiceTeams = team?.voice.orEmpty(),
+        statusText = "", // в новом API отдельного статуса "в работе/завершён" не пришло в примере ответа
+        typeText = type?.description ?: type?.value.orEmpty(),
+        genres = emptyList(), // жанры временно не парсятся — формат поля не подтверждён точно
+        voiceTeams = emptyList(), // список участников приходит через отдельный эндпоинт /members
         episodes = episodesList,
-        year = season?.year
+        year = year
     )
 }
 
-// Ссылки на HLS могут приходить относительными — дополняем хостом стрим-сервера
-private fun fixHlsUrl(url: String, host: String?): String {
-    if (url.startsWith("http")) return url
-    val h = host ?: "cache.libria.fun"
-    return "https://$h$url"
-}
+fun ReleaseListDto.toDomainList(): List<Anime> = this.map { it.toDomain() }
 
-fun TitleListResponse.toDomainList(): List<Anime> = list.map { it.toDomain() }
+// Берём лучшее доступное изображение из объекта постера/превью
+private fun PosterDto.original(): String? =
+    optimized?.preview ?: preview ?: optimized?.thumbnail ?: thumbnail
+
+// Относительные пути из API дополняются хостом картинок/видео
+private fun fixUrl(url: String): String {
+    if (url.isBlank()) return ""
+    return if (url.startsWith("http")) url else RetrofitClient.IMAGE_HOST + url
+}
